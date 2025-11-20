@@ -1,3 +1,18 @@
-username: apiuser@rakuten-sec.co.jp.ifaprotec1
-password: C@pgemin!2025
-securityToken: odkj0EHlpF75szfl0guIMMZpn
+  #password: "![9YdwjRU1zs3vyJYa76PHwQ==]"
+#  password: "![rAWt8ApKAzVTEQOQBfgI3A==]"
+  password: "![pPP4L2nULTL81YPbMik3dw==]"
+#  password: "![pN0zRXQwBku8zyMdntBdOA==]"
+
+  
+  security.token: "![YahoXWyoGycs/r0ubPHzbG9lOA5on4UwLsemCK9DOWE=]"
+
+
+
+
+#  username: "cap.saori.fukunishi@capgemini.com"
+#  username: "ts-yuki.b.nonaka@rakuten-sec.co.jp.cbrleh01"
+  username: "kaima_mule_uat1@rakuten-sec.co.jp.ifabrauat1"
+#  username: "kaima_dev1@rakuten-sec.co.jp"
+
+#  token.endpoint: "https://test.salesforce.com/services/Soap/u/40.0"
+  token.endpoint: "https://test.salesforce.com/services/Soap/u/64.0"
