@@ -115,3 +115,19 @@ CWR_ShareOfficeBatch cwrShareOfficeBatch = new CWR_ShareOfficeBatch();
 Database.executeBatch(cwrShareOfficeBatch,200);
 
 select COUNT_DISTINCT(Id) from Contact where CWR_Customer_Sales_Office__c = 'a1dIn000000LhdNIAS'
+
+
+************************************DB ORACLE SAPI ORACLE******************
+10.126.0.39
+account/dljora
+v1_rsdb01_cust_1
+ip: 10.126.0.35 ~ 10.126.0.42
+account: account/dljora
+tns2: X3_rsdb02_cust_1
+tns3: X3_rsdb03_cust_1
+tns4: X3_rsdb04_cust_1
+tns5: X3_rsdb05_cust_1
+tns6: X3_rsdb06_cust_1
+tns7: X3_rsdb07_cust_1
+tns8: X3_rsdb08_cust_1
+tns9: X3_rsdb09_cust_1
