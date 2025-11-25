@@ -74,3 +74,44 @@ sf.ifa:
 
   
   security.token: "![YahoXWyoGycs/r0ubPHzbG9lOA5on4UwLsemCK9DOWE=]"
+
+
+*****************************************************************************************
+***********************SALESFORCE********************************************************
+------------------NO3-----------------------
+select count() from Outsourcing_report__c
+
+26059
+
+select Id, Name, LastUpdateDate__c from LastUpdateBatchOutSourceRep__c
+
+cwrDeleteOrderhistory b = new cwrDeleteOrderhistory();
+Database.executeBatch(b);
+
+cwrOutsourcingReportSearchBatch objectTest = new cwrOutsourcingReportSearchBatch(-1);
+Database.executeBatch(objectTest, 1);
+
+Outsourcing Report Hourly Job
+cwrSCHPerOutsourcingReportSearchBatch
+0 0 * * * ?
+
+Delete Outsourcing Report Daily Job - 媒介注文情報履歴削除
+cwrSCHDeleteOrderhistory
+0 45 11 * * ?
+
+Daily 1 ngày 1 lần: 媒介注文履歴情報日次バッチ
+Daily 1 giờ 1 lần: 媒介注文履歴情報毎時バッチ
+
+------------------NO18-----------------------
+oas => CWR_Office_Access__c lay ra CWR_SalesOffice__c, CWR_MgrUser__c, CWR_Office_AuthFlg__c
+mapOaMgrs => put gia tri vao manager
+User => WHERE (Profile.Name = 'IFA法人管理者2' OR Profile.Name = '提携金融機関管理者') AND Id NOT IN :oaUserIds
+
+IFA登録申請 => 	IfaRegisterApplication__c => khach hang bao lam viec tren object nay de lay du lieu sang object Business_office__c
+営業所 => Business_office__c => object chinh lam viec Contact1-30
+営業所共有 => CWR_Office_Access__c => object hien tai dang lam viec voi cac field ManagerList1-30
+
+CWR_ShareOfficeBatch cwrShareOfficeBatch = new CWR_ShareOfficeBatch();
+Database.executeBatch(cwrShareOfficeBatch,200);
+
+select COUNT_DISTINCT(Id) from Contact where CWR_Customer_Sales_Office__c = 'a1dIn000000LhdNIAS'
