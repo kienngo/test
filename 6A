@@ -1,0 +1,75 @@
+%dw 2.0
+output application/java
+---
+"
+ SELECT  /*+ APL-070060214 */
+        NULL AS PROC_DT, /* 処理日 */
+        S.ORD_NO, /* 注文NO */
+        S.DSCR_CD, /* 銘柄コード */
+        S.DSCR_NM, /* 銘柄名称 */
+        SUM(E.EXEC_NOMINAL) AS EXEC_NOMINAL, /* 約定数量 */
+        NULL AS EXEC_TM, /* 約定時間 */
+        SUM(E.EXEC_NOMINAL * (E.PRICE_INT + E.PRICE_DECML)) AS NET_AMT /* 約定代金 */
+FROM 
+  US_STOCK_ORDER S, /* 米国株式注文 */
+  (SELECT /*+ ORDERED USE_NL(X) */ DISTINCT X.ORD_NO
+      FROM
+        " ++ ifaClientControlVar
+          ++ ifaChargeMasterVar  ++ "
+        US_STOCK_ORDER X
+     WHERE 1=1
+        AND X.CLIENT_CD = Y.CLIENT_CD
+		"	++ appDateVar
+			++ corpCodeVar 
+			++ isCorpCodeNullVar
+			++ chargeCdVar
+			++ officeCdVar 
+			++ clientCdVar ++ "
+    ) W,  
+  US_EXECUTION E /* 米国株出来値 */
+WHERE
+    S.ORD_NO = W.ORD_NO
+AND S.ORD_NO = E.ORD_NO
+AND S.ORD_SUB_NO = 1
+AND S.INPUT_ROUTE = 11
+GROUP BY S.ORD_NO, S.DSCR_CD, S.DSCR_NM
+
+UNION ALL
+
+ SELECT 
+        S.PROC_DT, /* 処理日 */
+        S.ORD_NO, /* 注文NO */
+        S.DSCR_CD, /* 銘柄コード */
+        S.DSCR_NM, /* 銘柄名称 */
+        SUM(E.EXEC_NOMINAL) AS EXEC_NOMINAL, /* 約定数量 */
+        NULL AS EXEC_TM, /* 約定時間 */
+        SUM(E.EXEC_NOMINAL * (E.PRICE_INT + E.PRICE_DECML)) AS NET_AMT /* 約定代金 */
+FROM 
+  IFA_US_STOCK_ORDER_HIST S, /* IFA米国株式注文履歴 */
+  (SELECT DISTINCT
+          X.PROC_DT,
+          X.ORD_NO
+      FROM
+        " ++ ifaClientControlVar
+         ++ ifaChargeMasterVar  ++ "
+        IFA_US_STOCK_ORDER_HIST X
+     WHERE 1=1
+        AND X.CLIENT_CD = Y.CLIENT_CD
+		"	++ appDateVar
+			++ corpCodeVar 
+			++ isCorpCodeNullVar
+			++ chargeCdVar
+			++ officeCdVar 
+			++ clientCdVar ++ "
+    ) W,
+  IFA_US_EXECUTION_HIST E /* IFA米国株出来値履歴 */
+WHERE
+    S.PROC_DT = W.PROC_DT
+AND S.ORD_NO = W.ORD_NO
+AND S.PROC_DT = E.PROC_DT
+AND S.ORD_NO = E.ORD_NO
+AND S.ORD_SUB_NO = 1
+AND S.INPUT_ROUTE = 11
+GROUP BY S.PROC_DT, S.ORD_NO, S.DSCR_CD, S.DSCR_NM
+ORDER BY PROC_DT /* 処理日 */, ORD_NO /* 注文NO */
+" ++ offSetLimitVar
