@@ -131,3 +131,5 @@ tns6: X3_rsdb06_cust_1
 tns7: X3_rsdb07_cust_1
 tns8: X3_rsdb08_cust_1
 tns9: X3_rsdb09_cust_1
+
+TO_DATE(:appDateStart,'YYYY-MM-DD HH24:MI:SS')
