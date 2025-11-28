@@ -141,3 +141,12 @@ SELECT /*+ APL-270500016 */
 	ifa_ce.IFA_CORP_CD || '_' || ifa_ce.IFA_CHARGE_CD AS "cd_ifa_person_key__c" /* IFA法人コード&IFAコード */
 	, ifa_ce.PO_BOX_TYPE AS "PO_BOX_TYPE__c" /* 私書箱閲覧設定（管理者） */
 	FROM IFA_CHARGE_EXT ifa_ce /* IFA担当者付加情報 */
+
+
+%dw 2.0
+output application/json
+---
+{
+	"status": 200,
+	"errorMgs": ""
+}
