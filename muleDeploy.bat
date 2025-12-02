@@ -1,0 +1,1 @@
+mvn clean deploy -DmuleDeploy -Dtarget.env=DEV -Dmule.verbose.exceptions=true -Dops.id=ac5541f80b6848bd8e6c5d02c9baee85 -Dops.secret=bEF9380F6faa4703Bbe1CAB17762edcf -Dtarget.server.grp=rakuten-mule-server-group-stg -DskipMunitTests
