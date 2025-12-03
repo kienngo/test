@@ -1,0 +1,21 @@
+[No5]
+Project: rakuten-ifa-business-report-xapi
+Path: /rakuten-ifa-business-report-xapi/src/main/resources/config/global/config.yaml
+Noi dung sua: Sua lai cronjob cho customer.info.batch tu "0 25 1 ? * *" sang "0 0 0/3 ? * *"
+
+[No17
+Project: rakuten-ifa-business-report-xapi
+Path: rakuten-ifa-business-report-xapi\src\main\mule\scheduler.xml -> Them schedule
+Path: rakuten-ifa-business-report-xapi\src\main\resources\config\global\config.yaml -> them cronjob cho schedule
+Path: 
+	+, rakuten-ifa-business-report-xapi\src\main\mule\impl\impl-contact-datadb-to-sf-async.xml
+	+, rakuten-ifa-business-report-xapi\src\main\mule\process\process-contact-datadb-to-sf-async.xml
+	-> Cac file tao flow moi
+
+Project: rakuten-ifa-charge-oracle-sapi
+Path: C:\Users\sts-kien.ngoduc\Desktop\project\mulesoft\rakuten-ifa-charge-oracle-sapi\pom.xml -> them mule-salesforce-connector va upgrade version raml
+Path: C:\Users\sts-kien.ngoduc\Desktop\project\mulesoft\rakuten-ifa-charge-oracle-sapi\src\main\mule\rakuten-ifa-charge-oracle-sapi.xml -> them flow api
+Path: C:\Users\sts-kien.ngoduc\Desktop\project\mulesoft\rakuten-ifa-charge-oracle-sapi\src\main\mule\system\sys-oracle-db.xml -> them flow api
+Path:
+	+, C:\Users\sts-kien.ngoduc\Desktop\project\mulesoft\rakuten-ifa-charge-oracle-sapi\src\main\mule\impl\impl-contact-datadb-to-sf-async.xml
+	-> Cac file tao flow moi
