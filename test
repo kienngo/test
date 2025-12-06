@@ -153,3 +153,11 @@ output application/json
 
 /rakuten-ifa-charge-oracle-sapi/src/main/resources/config/dev/config.yaml
 /rakuten-ifa-charge-oracle-sapi/src/main/resources/config/dev/secure-config.yaml
+
+Refactor code (branch feature/ifa-pro-ph4-dev) -> release source mule
+1) rakuten-ifa-business-report-xapi -> branch muleVerUp -> deployment done
+2) rakuten-ifa-charge-oracle-sapi -> branch muleVerUp -> deployment done
+3) rakuten-ifa-oracle-sapi -> branch muleVerUp -> deployment done
+4) rakuten-ifa-sf-sapi -> branch muleVerUp -> deployment done
+
+*** Note: trước khi tạo branch release/kmd_20251220 thì phải pull từ branch muleVerUp về trước -> gần ngày release sẽ làm
