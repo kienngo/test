@@ -150,3 +150,6 @@ output application/json
 	"status": 200,
 	"errorMgs": ""
 }
+
+/rakuten-ifa-charge-oracle-sapi/src/main/resources/config/dev/config.yaml
+/rakuten-ifa-charge-oracle-sapi/src/main/resources/config/dev/secure-config.yaml
