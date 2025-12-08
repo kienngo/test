@@ -1,0 +1,23 @@
+Release 20/12/2025
+1. No3
+-> Pending
+2. No5
+- Không sửa trên salesforce
+3. No17
+- Thêm PO_BOX_TYPE__c vào object ...
+4. No18
+- Thêm CWR_Contact1~30__c vào object ...
+- Sửa file trong classes:
+  CWR_ShareOfficeBatch.cls
+  CWR_ShareOfficeBatch.cls-meta.xml
+8. No21
+- Sửa object Customer_information__c
+  sửa fields:
+    CWR_Financial_assets__c (picklist) : thêm Label - API name : từ 11 - 24 
+    CWR_Investment_products_display__c (fomula) : nối vào chuỗi hiển thị của CWR_Investment_products__c các chuỗi CWR_Investment_policy__c, CWR_Type_of_income__c, CWR_Type_of_income_others__c
+    CWR_Motivation_display__c (fomula) : nối thêm vào chuỗi CWR_Declared_amount__c
+  Thêm fields : 
+    CWR_Declared_amount__c (text),
+    CWR_Type_of_income__c (text)
+    CWR_Type_of_income_others__c (text)
+    CWR_Investment_policy__c (text)
