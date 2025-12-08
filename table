@@ -1,9 +1,16 @@
-BOND_ORD											IFA_BOND_ORD_HIST									POOL_STOCK_ORDER_LINK
-																				
-																				
-																				STOCK_ORDER
-																				POOL_STOCK_ORDER
-																				
-																				
-																				NISA_ACC_LINK_INFO
-																				CLNT_ISA_MNG
+(1) VS (6)
+POOL_STOCK_ORDER_LINK
+STOCK_ORDER
+POOL_STOCK_ORDER
+IFA_POOL_STOCK_ORDER_LINK_HIST
+IFA_STOCK_ORDER_HIST
+IFA_POOL_STOCK_ORDER_HIST
+NISA_ACC_LINK_INFO
+CLNT_ISA_MNG
+IPO_ORDER
+IPO_DSCR_MST
+FRACT_JP_ORD
+---------------
+BOND_ORD
+IFA_BOND_ORD_HIST
+
