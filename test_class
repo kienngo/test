@@ -1,0 +1,90 @@
+@isTest
+public with sharing class CWR_CustomerInfoTriggerHandlerTest {
+    @isTest
+    static void testBeforeUpdateTrigger() {
+        // テストデータをセットアップします。
+        Account testAccount = new Account(Name = 'Test Account', cd_ifa_corp__c = '223');
+        insert testAccount;
+        Account testAccount1 = new Account(Name = 'Test Account1', cd_ifa_corp__c = '333');
+        insert testAccount1;
+        // 営業所
+        Business_office__c businessOffice1 = new Business_office__c(
+            Name = 'Test営業所1',
+            CWR_Office_code__c = 'ts71',
+            CWR_Corporate__c = testAccount.Id
+ 
+        );
+        insert businessOffice1;
+        // 営業所
+        Business_office__c businessOffice2 = new Business_office__c(
+            Name = 'Test営業所2',
+            CWR_Office_code__c = 'ts72',
+            CWR_Corporate__c = testAccount1.Id
+        );
+        insert businessOffice2;
+        Contact testContact1 = new Contact(LastName = 'Test Contact1', AccountId = testAccount.Id,CWR_Customer_Sales_Office__c = businessOffice1.Id);
+        insert testContact1;
+        Contact testContact2 = new Contact(LastName = 'Test Contact2', AccountId = testAccount.Id,CWR_Customer_Sales_Office__c = businessOffice1.Id);
+        insert testContact2;
+        Contact testContact3 = new Contact(LastName = 'Test Contact3', AccountId = testAccount1.Id,CWR_Customer_Sales_Office__c = businessOffice2.Id);
+        insert testContact3;
+        Profile p = [SELECT Id FROM Profile WHERE Name='IFA法人管理者2'];
+        User u1 = new User(
+            Username='CustomerInfo1@text.com' +System.now().getTime()
+            ,LastName='test1'
+            ,Email='CustomerInfo1@Test.com'
+            ,Alias='IFA'
+            ,TimeZoneSidKey='Asia/Tokyo'
+            ,LocaleSidKey='ja_JP'
+            ,EmailEncodingKey='UTF-8'
+            ,ProfileId=p.Id
+            ,LanguageLocaleKey='ja'
+            ,ContactId = testContact1.Id
+        );
+        insert u1;
+ 
+        User u2 = new User(
+            Username='CustomerInfo2@text.com' +System.now().getTime()
+            ,LastName='test1'
+            ,Email='CustomerInfo2@Test.com'
+            ,Alias='IFA2'
+            ,TimeZoneSidKey='Asia/Tokyo'
+            ,LocaleSidKey='ja_JP'
+            ,EmailEncodingKey='UTF-8'
+            ,ProfileId=p.Id
+            ,LanguageLocaleKey='ja'
+            ,ContactId = testContact2.Id
+        );
+        insert u2;
+        User u3 = new User(
+            Username='CustomerInfo3@text.com' +System.now().getTime()
+            ,LastName='test3'
+            ,Email='CustomerInfo3@Test.com'
+            ,Alias='IFA3'
+            ,TimeZoneSidKey='Asia/Tokyo'
+            ,LocaleSidKey='ja_JP'
+            ,EmailEncodingKey='UTF-8'
+            ,ProfileId=p.Id
+            ,LanguageLocaleKey='ja'
+            ,ContactId = testContact3.Id
+        );
+        insert u3;
+        Customer_information__c testCustomer = new Customer_information__c(
+            // 必要なフィールドをここに追加
+            CWR_Customer_code__c = 'TestCustomerCode',
+            CWR_Contact__c = testContact1.Id,
+            OwnerId = u1.Id
+        );
+        insert testCustomer;
+ 
+        // テストメソッドの開始
+        Test.startTest();
+        // 所有者を変更してテスト
+        testCustomer.OwnerId = u2.Id;
+        update testCustomer;
+        // 所有者を変更してテスト
+        testCustomer.OwnerId = u3.Id;
+        update testCustomer;
+        Test.stopTest();
+    }
+}
