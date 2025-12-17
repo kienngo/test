@@ -225,3 +225,7 @@ oracle.server:
 ProfileId = [SELECT Id FROM Profile WHERE Name = 'システム管理者'].Id
  
 APL-070060210
+
+1B: APL-070060200
+2B: APL-070060201
+3B: APL-070060213
