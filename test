@@ -8,6 +8,21 @@
 Username: ts-tuan.nguyenminh@rakuten-sec.co.jp
 Hanoi2026
 Security token (case-sensitive): i3CVv0pYwgpTeENlRcnOQw8L
+# ENVIRONMENT PROPERTIES
+anypoint.platform.client_id: "![dWfhP9yCwWNOXKj1oXnUzhTPca4q6lVUdhJlPpr2VZPioW8cQFfoF/55hrRyhpfK]"
+anypoint.platform.client_secret: "![SsMlj6KeIaMdRc37MPweSyOB6GR0/YH3Qe5THbzDtXc3ToOByiE9YUt9JhfETTAU]"
+
+## SALESFORCE CONNECTIONS
+sf.ifa:
+  #password: "![9YdwjRU1zs3vyJYa76PHwQ==]"
+#  password: "![rAWt8ApKAzVTEQOQBfgI3A==]"
+#  password: "![pPP4L2nULTL81YPbMik3dw==]"
+#  password: "![pN0zRXQwBku8zyMdntBdOA==]"
+  password: "![ClKJ9X9XAJUjum5tgABT5Q==]"
+
+  
+#  security.token: "![YahoXWyoGycs/r0ubPHzbG9lOA5on4UwLsemCK9DOWE=]"
+  security.token: "![btsiJXNVsQGt4AJSOWSJZEVwxHz7SXwuRDzk17/mLjo=]"
  
  
  
