@@ -257,9 +257,9 @@ rakuten-ifa-charge-oracle-sapi
 8. No21
 rakuten-ifa-oracle-sapi
 rakuten-ifa-sf-sapi
-
+ 
 
 SELECT /*+ APL-270500016 */
-	ifa_ce.IFA_CORP_CD || '-' || ifa_ce.IFA_CHARGE_CD AS "cd_ifa_person_key__c" /* IFA法人コード&IFAコード */
-	, ifa_ce.PO_BOX_TYPE AS "PO_BOX_TYPE__c" /* 私書箱閲覧設定（管理者） */
-	FROM IFA_CHARGE_EXT ifa_ce /* IFA担当者付加情報 */
+	I.IFA_CORP_CD || '-' || I.IFA_CHARGE_CD AS "cd_ifa_person_key__c" /* IFA法人コード&IFAコード */
+	, I.PO_BOX_TYPE AS "PO_BOX_TYPE__c" /* 私書箱閲覧設定（管理者） */
+	FROM IFA_CHARGE_MSTR I /* IFA担当者マスタ */
