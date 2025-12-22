@@ -1,3 +1,5 @@
 rakuten-ifa-business-report-xapi
   START - customer-information-scheduler-flow
+    START - impl-customer-info-sync:\get-impl-customer-info-sync
+    END - impl-access-rights-sync-subflow:\get-impl-access-rights-sync-subflow
   END- customer-information-scheduler-flow
