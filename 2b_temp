@@ -1,0 +1,54 @@
+%dw 2.0
+output application/java
+---
+"
+SELECT 
+      '' PROC_DT, /* 処理日 */
+      '' ORD_NO, /* 注文NO */
+      '' ORD_SUB_NO, /* 注文サブNO */
+      '' POOL_SEQ_NO, /* 紐付シーケンス番号 */
+      '' INP_TM, /* 入力日時 */
+      '' INPUT_ROUTE, /* 入力経路 */
+      ''  AS BRANCH_CD, /* 部店コード */
+      ''  AS CLIENT_CD, /* 顧客コード */
+      '' BIRTH_DT,
+      '' CLNT_NM, /* 顧客名 */
+      '' CLNT_KANA_NM, /* 顧客カナ名 */      
+      '' IFA_CHARGE_CD, /* IFA担当者コード */
+      '' IFA_CHARGE_NM, /* IFA担当者名 */
+      '' IFA_CHARGE_KANA_NM, /* IFA担当者カナ名 */
+      '' AGENT, /* 入力者 */
+      2 AS MKT_POOL_KBN, /* 市場待機区分 */
+      '' MKT_ORD_KBN, /* 市場注文区分 */
+      '' POOL_ORD_KBN, /* 逆指値注文区分 */
+      '' SONAR_TRD_CD, /* 取引コード(SONAR取引コード) */
+      '' TRD_TYP_CD, /* 取引種別 */
+      '' CNCL_CORR_KBN, /* 取消訂正区分 */
+      '' DSCR_CD, /* 銘柄コード */
+      '' DSCR_NM, /* 銘柄名称 */
+      '' MKT_CD, /* 市場コード */
+      '' SOR_ORD_KBN, /* SORフラグ */
+      '' ORD_PRC, /* 単価 */      
+      '' NOMINAL, /* 株数(注文数量) */
+      '' EXEC_COND_CD, /* 執行条件 */
+      '' CO_ORD_VALID_DT, /* 出合注文有効日 */
+      '' LIQUIDATION_KBN, /* 弁済区分 */
+      '' SPA_KBN, /* 特定一般区分 */
+      '' ORD_STS_CD, /* 市場注文状況 */
+      '' ORD_STS_CD AS POOL_ORD_STS_CD, /* 逆指注文状況 */
+      '' TRADE_DT, /* 約定日 */
+      '' VALUE_DT, /* 受渡日 */
+      '' STOP_PRICE_KBN, /* 逆指値区分 */
+      ''  AS STOP_PRICE, /* 逆指値単価 */
+      ''  AS STOP_PRICE_COND_PRICE, /* 逆指値条件単価 */
+      ''  AS STOP_PRICE_COND_KBN, /* 逆指値条件区分 */
+      '' POOL_CNCL_CORR_KBN, /* 逆指値注文取消訂正区分 */
+      '' MKT_CNCL_CORR_KBN, /* 市場注文取消訂正区分 */
+      ''  AS MINOR_CLIENT_CD, /* 未成年総合口座顧客コード */
+      '' RCV_NO, /* 受付番号 */
+      '' EX_INP_TS, /* 注文入力時刻 */
+      '' IFD_ORD_KBN, /* セット注文区分 */
+      '' IFD_ORD_NO, /* セット注文番号 */
+      '' IFD_RCV_NO, /* セット注文受付番号 */
+      '' SESSION_KBN /* セッション区分 */
+FROM IFA_POOL_STOCK_ORDER_HIST
