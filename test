@@ -282,10 +282,10 @@ var currentTime = now() as String {format: "yyyy-MM-dd'T'HH:mm:ss"}
      if(not isBlank(attributes.queryParams.fromDate)) 
          attributes.queryParams.fromDate as String {format: "yyyy-MM-dd"} ++  " 00:00:00" 
      else   
-         (currentTime - |PT3H|) as String {format: "yyyy-MM-dd"} ++  " 00:00:00",
+         (currentTime   - |PT3H| ) as String {format: "yyyy-MM-dd HH:00:00"},
  	toDate:  
      if(not isBlank(attributes.queryParams.toDate)) 
          attributes.queryParams.toDate as String {format: "yyyy-MM-dd"} ++  " 23:59:59"
      else
-         (currentTime - |PT1H|) as String { format: "yyyy-MM-dd"}  ++  " " ++ currentTime as String {format: "H"} ++  ":59:59"
+         (currentTime   - |PT1H| ) as String {format: "yyyy-MM-dd HH:59:59"}
 }
