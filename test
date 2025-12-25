@@ -275,7 +275,7 @@ C:\Users\sts-kien.ngoduc\Desktop\project\mulesoft\rakuten-ifa-charge-oracle-sapi
 
 %dw 2.0
 output application/json
-var currentTime = now()
+var currentTime = now() as String {format: "yyyy-MM-dd'T'HH:mm:ss"}
 ---
 {
   fromDate: 
