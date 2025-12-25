@@ -272,3 +272,20 @@ username :
 ts-thanh.doduc@rakuten-sec.co.jp
 
 C:\Users\sts-kien.ngoduc\Desktop\project\mulesoft\rakuten-ifa-charge-oracle-sapi\src\main\mule\system\sys-oracle-db.xml
+
+%dw 2.0
+output application/json
+var currentTime = now()
+---
+{
+  fromDate: 
+     if(not isBlank(attributes.queryParams.fromDate)) 
+         attributes.queryParams.fromDate as String {format: "yyyy-MM-dd"} ++  " 00:00:00" 
+     else   
+         (currentTime - |PT3H|) as String {format: "yyyy-MM-dd"} ++  " 00:00:00",
+ 	toDate:  
+     if(not isBlank(attributes.queryParams.toDate)) 
+         attributes.queryParams.toDate as String {format: "yyyy-MM-dd"} ++  " 23:59:59"
+     else
+         (currentTime - |PT1H|) as String { format: "yyyy-MM-dd"}  ++  " " ++ currentTime as String {format: "H"} ++  ":59:59"
+}
