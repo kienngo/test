@@ -289,3 +289,4 @@ var currentTime = now() as String {format: "yyyy-MM-dd'T'HH:mm:ss"}
      else
          (currentTime   - |PT1H| ) as String {format: "yyyy-MM-dd HH:59:59"}
 }
+https://docs.mulesoft.com/mule-runtime/latest/batch-processing-concept
