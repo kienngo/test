@@ -291,7 +291,8 @@ var currentTime = now() as String {format: "yyyy-MM-dd'T'HH:mm:ss"}
 }
 https://docs.mulesoft.com/mule-runtime/latest/batch-processing-concept
 
-
+Khung giờ: 01/06 15:55~16:05
+Các APL cần xin:
 sql 1B: APL-070060200
 sql 2B: APL-070060201
 sql 3B: APL-070060213
