@@ -290,3 +290,8 @@ var currentTime = now() as String {format: "yyyy-MM-dd'T'HH:mm:ss"}
          (currentTime   - |PT1H| ) as String {format: "yyyy-MM-dd HH:59:59"}
 }
 https://docs.mulesoft.com/mule-runtime/latest/batch-processing-concept
+
+
+sql 1B: APL-070060200
+sql 2B: APL-070060201
+sql 3B: APL-070060213
