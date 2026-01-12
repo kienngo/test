@@ -1,0 +1,15 @@
+Release 13/01 - branch: release/kmd_20260113
+No17:
+project: rakuten-ifa-charge-oracle-sapi
+file:
+	+, src/main/mule/system/sys-oracle-db.xml
+No21:
+project: rakuten-ifa-business-report-xapi
+file:
+	+, src/main/resources/config/global/config.yaml
+project: rakuten-ifa-oracle-sapi
+file:
+	+, src/main/mule/impl/impl-customer-info-delete.xml
+	+, src/main/mule/impl/impl-customer-info-new-supplement-sync.xml
+	+, src/main/mule/impl/impl-customer-info-new-sync.xml
+	+, src/main/mule/impl/impl-customer-info-updated-sync.xml
