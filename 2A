@@ -1,0 +1,407 @@
+%dw 2.0
+output application/java
+---
+"
+ SELECT /*+ LEADING(W S) INDEX(L IFA_POOL_STOCK_ORDER_L_H_PKY) INDEX(S IFA_STOCK_ORDER_PKY) INDEX(P IFA_POOL_STOCK_ORDER_PKY) */ /*+ APL-070060201 */
+       S.PROC_DT, /* 処理日 */
+       S.ORD_NO, /* 注文NO */
+       S.ORD_SUB_NO, /* 注文サブNO */
+       L.POOL_SEQ_NO, /* 紐付シーケンス番号 */
+       S.INP_TM, /* 入力日時 */
+       S.INPUT_ROUTE, /* 入力経路 */
+       BRANCH_MNG_PKG.GET_BRANCH_CD(S.CLIENT_CD) AS BRANCH_CD, /* 部店コード */
+       BRANCH_MNG_PKG.GET_OUT_CLIENT_CD(S.CLIENT_CD) AS CLIENT_CD, /* 顧客コード */
+	   B.BIRTH_DT,
+       B.CLNT_NM, /* 顧客名 */
+       B.CLNT_KANA_NM, /* 顧客カナ名 */
+       D.IFA_CHARGE_CD, /* IFA担当者コード */
+       D.IFA_CHARGE_NM, /* IFA担当者名 */
+       D.IFA_CHARGE_KANA_NM, /* IFA担当者カナ名 */
+       S.AGENT, /* 入力者 */
+       1 AS MKT_POOL_KBN, /* 市場待機区分 */
+       L.MKT_ORD_KBN, /* 市場注文区分 */
+       L.POOL_ORD_KBN, /* 逆指値注文区分 */
+       S.SONAR_TRD_CD, /* 取引コード(SONAR取引コード) */
+       S.TRD_TYP_CD, /* 取引種別 */
+       S.CNCL_CORR_KBN, /* 取消訂正区分 */
+       S.DSCR_CD, /* 銘柄コード */
+       S.DSCR_NM, /* 銘柄名称 */
+       S.MKT_CD, /* 市場コード */
+       S.SOR_ORD_KBN, /* SORフラグ*/
+       S.ORD_PRC, /* 単価 */       
+       S.NOMINAL, /* 株数(注文数量) */
+       S.EXEC_COND_CD, /* 執行条件 */
+       S.CO_ORD_VALID_DT, /* 出合注文有効日 */
+       S.SPA_KBN, /* 特定一般区分 */
+       S.ORD_STS_CD, /* 市場注文状況 */
+       P.ORD_STS_CD AS POOL_ORD_STS_CD, /* 逆指注文状況 */
+       S.TRADE_DT, /* 約定日 */
+       S.VALUE_DT, /* 受渡日 */
+       P.STOP_PRICE_KBN, /* 逆指値区分 */
+       NVL(P.ORD_PRC, 0) AS STOP_PRICE, /* 逆指値単価 */
+       NVL(P.STOP_PRICE_COND_PRICE, 0) AS STOP_PRICE_COND_PRICE, /* 逆指値条件単価 */
+       NVL(P.STOP_PRICE_COND_KBN, 0) AS STOP_PRICE_COND_KBN, /* 逆指値条件区分 */
+       L.POOL_CNCL_CORR_KBN, /* 逆指値注文取消訂正区分 */
+       L.MKT_CNCL_CORR_KBN, /* 市場注文取消訂正区分 */
+       BRANCH_MNG_PKG.GET_OUT_CLIENT_CD(E.MINOR_CLIENT_CD) AS MINOR_CLIENT_CD, /* 未成年総合口座顧客コード */
+       S.RCV_NO, /* 受付番号 */
+       S.EX_INP_TS, /* 注文入力時刻 */
+       S.IFD_ORD_KBN, /* セット注文区分 */
+       S.IFD_ORD_NO, /* セット注文番号 */
+       S.IFD_RCV_NO, /* セット注文受付番号 */
+       S.SESSION_KBN /* セッション区分 */
+FROM 
+    IFA_POOL_STOCK_ORDER_LINK_HIST L, /* IFA逆指値株式注文紐付情報履歴 */
+    IFA_STOCK_ORDER_HIST S, /* IFA株式注文履歴 */
+    IFA_POOL_STOCK_ORDER_HIST P, /* IFA逆指値株式注文履歴 */
+    (
+     (
+      " ++ ifaClntCtrlIdxVar ++ " 
+            X.PROC_DT,
+            X.ORD_NO
+      FROM
+        "  ++ ifaClientControlVar
+           ++ ifaChargeMasterVar ++   "
+        IFA_STOCK_ORDER_HIST X
+	  WHERE 1=1
+	    	AND X.CLIENT_CD = Y.CLIENT_CD 
+		    AND (X.SONAR_TRD_CD IS NULL OR  X.SONAR_TRD_CD IN (11, 92)) "
+			++ appDateVar
+			++ corpCodeVar 
+			++ isCorpCodeNullVar
+			++ chargeCdVar
+			++ officeCdVar 
+			++ clientCdVar ++ 
+			"
+     ) 
+     UNION
+     (
+      " ++ ifaClntCtrlIdxVar ++ " 
+            X.PROC_DT,
+            X.ORD_NO
+      FROM
+           "  ++ ifaClientControlVar
+              ++ ifaChargeMasterVar ++   "
+           IFA_POOL_STOCK_ORDER_HIST X
+	   WHERE 1=1
+	    	AND X.CLIENT_CD = Y.CLIENT_CD 
+		    AND (X.SONAR_TRD_CD IS NULL OR  X.SONAR_TRD_CD IN (11, 92)) "
+			++ appDateVar
+			++ corpCodeVar 
+			++ isCorpCodeNullVar
+			++ chargeCdVar
+			++ officeCdVar 
+			++ clientCdVar ++ 
+			"
+     )
+    ) W,
+    BV_USER_PROFILE B, /* 顧客基本情報 */
+    IFA_CHARGE_MSTR_HIST D, /* IFA担当者マスタ履歴 */
+    NISA_ACC_LINK_INFO E, /* NISA口座紐付情報 */
+    (SELECT
+       C.INSPECT_NG_DT,
+       C.EASY_TRD_OPN_DT,
+       B.CLIENT_CD
+      FROM CLNT_ISA_MNG C,
+           BV_USER_PROFILE B
+      WHERE B.USER_ID = C.USER_ID
+        AND C.INSPECT_NG_DT IS NOT NULL) M /* ISA口座管理 */    
+WHERE
+    S.PROC_DT = W.PROC_DT
+AND S.ORD_NO = W.ORD_NO
+AND L.PROC_DT = S.PROC_DT
+AND L.ORD_NO = S.ORD_NO
+AND L.MKT_ORD_SUB_NO = S.ORD_SUB_NO
+AND L.PROC_DT = P.PROC_DT(+)
+AND L.ORD_NO = P.ORD_NO(+)
+AND L.POOL_ORD_SUB_NO = P.ORD_SUB_NO(+)
+AND (L.POOL_ORD_SUB_NO IS NULL 
+      OR (L.MKT_CNCL_CORR_KBN IN ( 1, 2 ) AND L.POOL_CNCL_CORR_KBN = 0)
+      OR L.MKT_ORD_KBN IN (2, 3)
+     )
+AND S.IFA_CORP_CD = D.IFA_CORP_CD
+AND S.IFA_CHARGE_CD = D.IFA_CHARGE_CD
+AND D.ST_DT <= S.INP_TM
+AND D.END_DT >= S.INP_TM
+AND S.CLIENT_CD = B.CLIENT_CD
+AND S.INPUT_ROUTE = 11
+" ++ birthDayVar ++ " 
+AND S.CLIENT_CD = E.JUNIOR_NISA_CLIENT_CD(+)
+AND S.CLIENT_CD = M.CLIENT_CD(+)
+AND TO_CHAR( S.TRADE_DT, 'YYYYMMDD' ) BETWEEN TO_CHAR( M.EASY_TRD_OPN_DT(+), 'YYYYMMDD' ) 
+AND CAL.DATE_ADD_SEC(TO_CHAR(M.INSPECT_NG_DT(+),'YYYYMMDD'), + 6)
+
+UNION ALL
+
+SELECT /*+ LEADING(W S) INDEX(L IFA_POOL_STOCK_ORDER_L_H_PKY) INDEX(S IFA_STOCK_ORDER_PKY) INDEX(P IFA_POOL_STOCK_ORDER_PKY) */
+      P.PROC_DT, /* 処理日 */
+      P.ORD_NO, /* 注文NO */
+      P.ORD_SUB_NO, /* 注文サブNO */
+      L.POOL_SEQ_NO, /* 紐付シーケンス番号 */
+      P.INP_TM, /* 入力日時 */
+      P.INPUT_ROUTE, /* 入力経路 */
+      BRANCH_MNG_PKG.GET_BRANCH_CD(P.CLIENT_CD) AS BRANCH_CD, /* 部店コード */
+      BRANCH_MNG_PKG.GET_OUT_CLIENT_CD(P.CLIENT_CD) AS CLIENT_CD, /* 顧客コード */
+	  B.BIRTH_DT,
+      B.CLNT_NM, /* 顧客名 */
+      B.CLNT_KANA_NM, /* 顧客カナ名 */      
+      D.IFA_CHARGE_CD, /* IFA担当者コード */
+      D.IFA_CHARGE_NM, /* IFA担当者名 */
+      D.IFA_CHARGE_KANA_NM, /* IFA担当者カナ名 */
+      P.AGENT, /* 入力者 */
+      2 AS MKT_POOL_KBN, /* 市場待機区分 */
+      L.MKT_ORD_KBN, /* 市場注文区分 */
+      L.POOL_ORD_KBN, /* 逆指値注文区分 */
+      P.SONAR_TRD_CD, /* 取引コード(SONAR取引コード) */
+      P.TRD_TYP_CD, /* 取引種別 */
+      P.CNCL_CORR_KBN, /* 取消訂正区分 */
+      P.DSCR_CD, /* 銘柄コード */
+      P.DSCR_NM, /* 銘柄名称 */
+      P.MKT_CD, /* 市場コード */
+      P.SOR_ORD_KBN, /* SORフラグ */
+      DECODE(L.POOL_ORD_KBN, 2, 0, 1,
+          DECODE( S.ORD_SUB_NO, 1, S.ORD_PRC,
+              DECODE( NVL(S.MQ_ERR_CD, '0000'), '0000', S.ORD_PRC , S.PREV_PRC ))) ORD_PRC, /* 単価 */      
+      DECODE(L.POOL_ORD_KBN, 2, P.NOMINAL, 1,
+          DECODE( S.ORD_SUB_NO, 1, S.NOMINAL, 
+              DECODE( NVL(S.MQ_ERR_CD, '0000'),  '0000', S.NOMINAL , S.PREV_NOMINAL))) NOMINAL, /* 株数(注文数量) */
+      DECODE(L.POOL_ORD_KBN, 2, P.EXEC_COND_CD, 1,
+          DECODE( S.ORD_SUB_NO, 1, S.EXEC_COND_CD,
+              DECODE( NVL(S.MQ_ERR_CD, '0000'),  '0000', S.EXEC_COND_CD, S.PREV_EXEC_COND_CD))) EXEC_COND_CD, /* 執行条件 */
+      DECODE(L.POOL_ORD_KBN, 2, P.CO_ORD_VALID_DT, 1,
+          DECODE( S.ORD_SUB_NO, 1, S.CO_ORD_VALID_DT,
+              DECODE( NVL(S.MQ_ERR_CD, '0000'),  '0000', S.CO_ORD_VALID_DT, S.PREV_CO_ORD_VALID_DT))) CO_ORD_VALID_DT, /* 出合注文有効日 */
+      P.SPA_KBN, /* 特定一般区分 */
+      S.ORD_STS_CD, /* 市場注文状況 */
+      P.ORD_STS_CD AS POOL_ORD_STS_CD, /* 逆指注文状況 */
+      P.TRADE_DT, /* 約定日 */
+      P.VALUE_DT, /* 受渡日 */
+      P.STOP_PRICE_KBN, /* 逆指値区分 */
+      NVL(P.ORD_PRC, 0) AS STOP_PRICE, /* 逆指値単価 */
+      NVL(P.STOP_PRICE_COND_PRICE, 0) AS STOP_PRICE_COND_PRICE, /* 逆指値条件単価 */
+      NVL(P.STOP_PRICE_COND_KBN, 0) AS STOP_PRICE_COND_KBN, /* 逆指値条件区分 */
+      L.POOL_CNCL_CORR_KBN, /* 逆指値注文取消訂正区分 */
+      L.MKT_CNCL_CORR_KBN, /* 市場注文取消訂正区分 */
+      BRANCH_MNG_PKG.GET_OUT_CLIENT_CD(E.MINOR_CLIENT_CD) AS MINOR_CLIENT_CD, /* 未成年総合口座顧客コード */
+      P.RCV_NO, /* 受付番号 */
+      P.EX_INP_TS, /* 注文入力時刻 */
+      P.IFD_ORD_KBN, /* セット注文区分 */
+      P.IFD_ORD_NO, /* セット注文番号 */
+      P.IFD_RCV_NO, /* セット注文受付番号 */
+      P.SESSION_KBN /* セッション区分 */
+FROM 
+    IFA_POOL_STOCK_ORDER_LINK_HIST L, /* IFA逆指値株式注文紐付情報履歴 */
+    IFA_STOCK_ORDER_HIST S, /* IFA株式注文履歴 */
+    IFA_POOL_STOCK_ORDER_HIST P, /* IFA逆指値株式注文履歴 */
+    (
+     (
+      " ++ ifaClntCtrlIdxVar ++ " 
+            X.PROC_DT,
+            X.ORD_NO
+      FROM
+        "  ++ ifaClientControlVar
+           ++ ifaChargeMasterVar ++   "
+        IFA_STOCK_ORDER_HIST X
+	   WHERE 1=1
+	    	AND X.CLIENT_CD = Y.CLIENT_CD 
+		    AND (X.SONAR_TRD_CD IS NULL OR  X.SONAR_TRD_CD IN (11, 92)) "
+			++ appDateVar
+			++ corpCodeVar 
+			++ isCorpCodeNullVar
+			++ chargeCdVar
+			++ officeCdVar 
+			++ clientCdVar ++ 
+			"
+     ) 
+     UNION
+     (
+      " ++ ifaClntCtrlIdxVar ++ " 
+            X.PROC_DT,
+            X.ORD_NO
+      FROM
+           "  ++ ifaClientControlVar
+              ++ ifaChargeMasterVar ++   "
+           IFA_POOL_STOCK_ORDER_HIST X
+	   WHERE 1=1
+	    	AND X.CLIENT_CD = Y.CLIENT_CD 
+		    AND (X.SONAR_TRD_CD IS NULL OR  X.SONAR_TRD_CD IN (11, 92)) "
+			++ appDateVar
+			++ corpCodeVar 
+			++ isCorpCodeNullVar
+			++ chargeCdVar
+			++ officeCdVar 
+			++ clientCdVar ++  
+			"
+     )
+    ) W,
+    BV_USER_PROFILE B, /* 顧客基本情報 */
+    IFA_CHARGE_MSTR_HIST D, /* IFA担当者マスタ履歴 */
+    NISA_ACC_LINK_INFO E, /* NISA口座紐付情報 */
+    (SELECT
+       C.INSPECT_NG_DT,
+       C.EASY_TRD_OPN_DT,
+       B.CLIENT_CD
+      FROM CLNT_ISA_MNG C,
+           BV_USER_PROFILE B
+      WHERE B.USER_ID = C.USER_ID
+        AND C.INSPECT_NG_DT IS NOT NULL) M /* ISA口座管理 */    
+WHERE
+    P.PROC_DT = W.PROC_DT 
+AND P.ORD_NO = W.ORD_NO
+AND ( L.MKT_ORD_SUB_NO IS NULL 
+      OR ( L.POOL_CNCL_CORR_KBN IN ( 1, 2 ) AND L.MKT_CNCL_CORR_KBN = 0)
+    )
+AND L.PROC_DT = P.PROC_DT
+AND L.ORD_NO = P.ORD_NO 
+AND L.POOL_ORD_SUB_NO = P.ORD_SUB_NO
+AND L.PROC_DT = S.PROC_DT(+)
+AND L.ORD_NO = S.ORD_NO(+)
+AND L.MKT_ORD_SUB_NO = S.ORD_SUB_NO(+)
+AND P.IFA_CORP_CD = D.IFA_CORP_CD
+AND P.IFA_CHARGE_CD = D.IFA_CHARGE_CD
+AND D.ST_DT <= P.INP_TM
+AND D.END_DT >= P.INP_TM
+AND P.CLIENT_CD = B.CLIENT_CD
+AND S.INPUT_ROUTE = 11
+" ++ birthDayVar ++ " 
+AND P.CLIENT_CD = E.JUNIOR_NISA_CLIENT_CD(+)
+AND P.CLIENT_CD = M.CLIENT_CD(+)
+AND TO_CHAR( P.TRADE_DT, 'YYYYMMDD' ) BETWEEN TO_CHAR( M.EASY_TRD_OPN_DT(+), 'YYYYMMDD' ) 
+AND CAL.DATE_ADD_SEC(TO_CHAR(M.INSPECT_NG_DT(+),'YYYYMMDD'), + 6)
+
+UNION ALL
+
+SELECT /*+ LEADING(W S) INDEX(L IFA_POOL_STOCK_ORDER_L_H_PKY) INDEX(S IFA_STOCK_ORDER_PKY) INDEX(P IFA_POOL_STOCK_ORDER_PKY) */
+      S.PROC_DT, /* 処理日 */
+      S.ORD_NO, /* 注文NO */
+      S.ORD_SUB_NO, /* 注文サブNO */
+      L.POOL_SEQ_NO, /* 紐付シーケンス番号 */
+      S.INP_TM, /* 入力日時 */
+      S.INPUT_ROUTE, /* 入力経路 */
+      BRANCH_MNG_PKG.GET_BRANCH_CD(S.CLIENT_CD) AS BRANCH_CD, /* 部店コード */
+      BRANCH_MNG_PKG.GET_OUT_CLIENT_CD(S.CLIENT_CD) AS CLIENT_CD, /* 顧客コード */
+      B.BIRTH_DT,
+      B.CLNT_NM, /* 顧客名 */
+      B.CLNT_KANA_NM, /* 顧客カナ名 */
+      D.IFA_CHARGE_CD, /* IFA担当者コード */
+      D.IFA_CHARGE_NM, /* IFA担当者名 */
+      D.IFA_CHARGE_KANA_NM, /* IFA担当者カナ名 */
+      S.AGENT, /* 入力者 */
+      3 AS MKT_POOL_KBN, /* 市場待機区分 */      
+      L.MKT_ORD_KBN, /* 市場注文区分 */
+      L.POOL_ORD_KBN, /* 逆指値注文区分 */
+      S.SONAR_TRD_CD, /* 取引コード(SONAR取引コード) */
+      S.TRD_TYP_CD, /* 取引種別 */
+      L.MKT_CNCL_CORR_KBN AS CNCL_CORR_KBN, /* 取消訂正区分 */
+      S.DSCR_CD, /* 銘柄コード */
+      S.DSCR_NM, /* 銘柄名称 */
+      S.MKT_CD, /* 市場コード */
+      S.SOR_ORD_KBN, /* SORフラグ*/
+      S.ORD_PRC, /* 単価 */       
+      S.NOMINAL, /* 株数(注文数量) */
+      S.EXEC_COND_CD, /* 執行条件 */
+      S.CO_ORD_VALID_DT, /* 出合注文有効日 */
+      S.SPA_KBN, /* 特定一般区分 */
+      S.ORD_STS_CD, /* 市場注文状況 */
+      P.ORD_STS_CD AS POOL_ORD_STS_CD, /* 逆指注文状況 */
+      S.TRADE_DT, /* 約定日 */
+      S.VALUE_DT, /* 受渡日 */
+      P.STOP_PRICE_KBN, /* 逆指値区分 */
+      NVL(P.ORD_PRC, 0) AS STOP_PRICE, /* 逆指値単価 */
+      NVL(P.STOP_PRICE_COND_PRICE, 0) AS STOP_PRICE_COND_PRICE, /* 逆指値条件単価 */
+      NVL(P.STOP_PRICE_COND_KBN, 0) AS STOP_PRICE_COND_KBN, /* 逆指値条件区分 */
+      L.POOL_CNCL_CORR_KBN, /* 逆指値注文取消訂正区分 */
+      L.MKT_CNCL_CORR_KBN, /* 市場注文取消訂正区分 */
+      BRANCH_MNG_PKG.GET_OUT_CLIENT_CD(E.MINOR_CLIENT_CD) AS MINOR_CLIENT_CD, /* 未成年総合口座顧客コード */
+      S.RCV_NO, /* 受付番号 */
+      S.EX_INP_TS, /* 注文入力時刻 */
+      S.IFD_ORD_KBN, /* セット注文区分 */
+      S.IFD_ORD_NO, /* セット注文番号 */
+      S.IFD_RCV_NO, /* セット注文受付番号 */
+      S.SESSION_KBN /* セッション区分 */
+FROM 
+    IFA_POOL_STOCK_ORDER_LINK_HIST L, /* IFA逆指値株式注文紐付情報履歴 */
+    IFA_STOCK_ORDER_HIST S, /* IFA株式注文履歴 */
+    IFA_POOL_STOCK_ORDER_HIST P, /* IFA逆指値株式注文履歴 */
+    (
+     (
+      " ++ ifaClntCtrlIdxVar ++ " 
+            X.PROC_DT,
+            X.ORD_NO
+      FROM
+        "  ++ ifaClientControlVar
+           ++ ifaChargeMasterVar ++   "
+        IFA_STOCK_ORDER_HIST X
+	   WHERE 1=1
+	    	AND X.CLIENT_CD = Y.CLIENT_CD 
+		    AND (X.SONAR_TRD_CD IS NULL OR  X.SONAR_TRD_CD IN (11, 92)) "
+			++ appDateVar
+			++ corpCodeVar 
+			++ isCorpCodeNullVar
+			++ chargeCdVar
+			++ officeCdVar 
+			++ clientCdVar ++ 
+			"
+     ) 
+     UNION
+     (
+      " ++ ifaClntCtrlIdxVar ++ " 
+            X.PROC_DT,
+            X.ORD_NO
+      FROM
+           "  ++ ifaClientControlVar
+              ++ ifaChargeMasterVar ++   "
+           IFA_POOL_STOCK_ORDER_HIST X
+	   WHERE 1=1
+	    	AND X.CLIENT_CD = Y.CLIENT_CD 
+		    AND (X.SONAR_TRD_CD IS NULL OR  X.SONAR_TRD_CD IN (11, 92)) "
+			++ appDateVar
+			++ corpCodeVar 
+			++ isCorpCodeNullVar
+			++ chargeCdVar
+			++ officeCdVar 
+			++ clientCdVar ++ 
+			"
+     )
+    ) W,
+    BV_USER_PROFILE B, /* 顧客基本情報 */
+    IFA_CHARGE_MSTR_HIST D, /* IFA担当者マスタ履歴 */
+    NISA_ACC_LINK_INFO E, /* NISA口座紐付情報 */
+    (SELECT
+       C.INSPECT_NG_DT,
+       C.EASY_TRD_OPN_DT,
+       B.CLIENT_CD
+      FROM CLNT_ISA_MNG C,
+           BV_USER_PROFILE B
+      WHERE B.USER_ID = C.USER_ID
+        AND C.INSPECT_NG_DT IS NOT NULL) M /* ISA口座管理 */    
+WHERE
+    S.PROC_DT = W.PROC_DT
+AND S.ORD_NO = W.ORD_NO
+AND L.MKT_ORD_KBN NOT IN (2, 3)
+AND L.MKT_ORD_SUB_NO IS NOT NULL 
+AND L.POOL_ORD_SUB_NO IS NOT NULL
+AND ( 
+      (L.MKT_CNCL_CORR_KBN <> 0 AND L.POOL_CNCL_CORR_KBN <> 0)
+      OR
+      (L.MKT_CNCL_CORR_KBN = 0 AND L.POOL_CNCL_CORR_KBN = 0)
+    )
+AND L.PROC_DT = S.PROC_DT
+AND L.ORD_NO = S.ORD_NO 
+AND L.MKT_ORD_SUB_NO = S.ORD_SUB_NO
+AND L.PROC_DT = P.PROC_DT
+AND L.ORD_NO = P.ORD_NO
+AND L.POOL_ORD_SUB_NO = P.ORD_SUB_NO
+AND S.IFA_CORP_CD = D.IFA_CORP_CD
+AND S.IFA_CHARGE_CD = D.IFA_CHARGE_CD
+AND D.ST_DT <= S.INP_TM
+AND D.END_DT >= S.INP_TM
+AND S.CLIENT_CD = B.CLIENT_CD
+AND S.INPUT_ROUTE = 11
+" ++ birthDayVar ++ " 
+AND S.CLIENT_CD = E.JUNIOR_NISA_CLIENT_CD(+)
+AND S.CLIENT_CD = M.CLIENT_CD(+)
+AND TO_CHAR( S.TRADE_DT, 'YYYYMMDD' ) BETWEEN TO_CHAR( M.EASY_TRD_OPN_DT(+), 'YYYYMMDD' ) 
+AND CAL.DATE_ADD_SEC(TO_CHAR(M.INSPECT_NG_DT(+),'YYYYMMDD'), + 6)
+ORDER BY PROC_DT /* 処理日 */, ORD_NO /* 注文NO */, POOL_SEQ_NO /* 紐付シーケンス番号 */, ORD_SUB_NO /* 注文サブNO*/
+" ++ offSetLimitVar 
