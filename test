@@ -328,3 +328,10 @@ C:\Users\sts-kien.ngoduc\Desktop\project\mule\rakuten-ifa-oracle-sapi\src\main\r
 C:\Users\sts-kien.ngoduc\Desktop\project\mule\rakuten-ifa-oracle-sapi\src\main\resources\dwl\sql\sqlQuery_2B.dwl
 C:\Users\sts-kien.ngoduc\Desktop\project\mule\rakuten-ifa-oracle-sapi\src\main\resources\dwl\sql\sqlQuery_3A.dwl
 C:\Users\sts-kien.ngoduc\Desktop\project\mule\rakuten-ifa-oracle-sapi\src\main\resources\dwl\sql\sqlQuery_3B.dwl
+
+
+
+sys.my.client.id: "![Dhf0JUanNaauGqWXbiixdHG0pstmwjXV9wEPRAFFpZU=]"
+sys.my.client.secret: "![63ATk7YqBxwLGfNN4mFqhPMqL/AKoF0b6uEqx/cnoTf8XUTP7Cqwa/gwY0HdKaL8]"
+anypoint.platform.client_id: "![dWfhP9yCwWNOXKj1oXnUzhTPca4q6lVUdhJlPpr2VZPioW8cQFfoF/55hrRyhpfK]"
+anypoint.platform.client_secret: "![SsMlj6KeIaMdRc37MPweSyOB6GR0/YH3Qe5THbzDtXc3ToOByiE9YUt9JhfETTAU]"
