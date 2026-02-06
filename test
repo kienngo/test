@@ -4,8 +4,7 @@
 #  password: "![pN0zRXQwBku8zyMdntBdOA==]"
 
   
- 
-Username: ts-tuan.nguyenminh@rakuten-sec.co.jp
+ Username: ts-tuan.nguyenminh@rakuten-sec.co.jp
 Hanoi2026
 Security token (case-sensitive): i3CVv0pYwgpTeENlRcnOQw8L
 # ENVIRONMENT PROPERTIES
@@ -335,3 +334,35 @@ sys.my.client.id: "![Dhf0JUanNaauGqWXbiixdHG0pstmwjXV9wEPRAFFpZU=]"
 sys.my.client.secret: "![63ATk7YqBxwLGfNN4mFqhPMqL/AKoF0b6uEqx/cnoTf8XUTP7Cqwa/gwY0HdKaL8]"
 anypoint.platform.client_id: "![dWfhP9yCwWNOXKj1oXnUzhTPca4q6lVUdhJlPpr2VZPioW8cQFfoF/55hrRyhpfK]"
 anypoint.platform.client_secret: "![SsMlj6KeIaMdRc37MPweSyOB6GR0/YH3Qe5THbzDtXc3ToOByiE9YUt9JhfETTAU]"
+
+
+%dw 2.0
+output application/java
+---
+{
+
+	"appDateVar":  if (vars.sqlParams.appDateStart != null and vars.sqlParams.appDateTo != null) " AND X.INP_TM BETWEEN TO_DATE(:appDateStart,'YYYY-MM-DD') AND TO_DATE(:appDateTo,'YYYY-MM-DD') " else "",
+	"buyDateVar": if (vars.sqlParams.appDateStart != null and vars.sqlParams.appDateTo != null) " AND A.BUY_APPLY_DATE BETWEEN TO_DATE(:appDateStart,'YYYY-MM-DD') AND TO_DATE(:appDateTo,'YYYY-MM-DD') " else "",
+	"corpCodeVar": if (vars.sqlParams.corpCode != null)" AND Y.IFA_CORP_CD = :corpCode "  else "" ,
+	"chargeCdVar": if (vars.sqlParams.chargeCd != null)" AND Y.IFA_CHARGE_CD = :chargeCd " else "",
+	"officeCdVar": if (vars.sqlParams.officeCd != null)" AND Z.OFFICE_CD = :officeCd 
+															  AND Y.IFA_CORP_CD = Z.IFA_CORP_CD
+                                                              AND Y.IFA_CHARGE_CD = Z.IFA_CHARGE_CD " else "",	             
+	"clientCdVar": if (vars.sqlParams.clientCd != null) 	" AND Y.CLIENT_CD = BRANCH_MNG_PKG.GET_IN_CLIENT_CD(:branchCd,:clientCd) " else "",
+	"birthDayVar":  if (vars.sqlParams.birthDayFrom != null and vars.sqlParams.birthDayTo != null)	" AND B.BIRTH_DT BETWEEN  TO_DATE(:birthDayFrom,'YYYY-MM-DD') AND TO_DATE(:birthDayTo,'YYYY-MM-DD') " else "",  	
+	"isCorpCodeNullVar": if (vars.sqlParams.corpCode == null) " AND Y.LATEST_REC_FLG = 1 " else "",
+    "appDateAVar" : if (vars.sqlParams.appDateStart != null and vars.sqlParams.appDateTo != null) " AND A.INP_TM BETWEEN TO_DATE(:appDateStart,'YYYY-MM-DD') AND TO_DATE(:appDateTo,'YYYY-MM-DD') " else "",
+    "lastDateVar": if (vars.sqlParams.appDateStart != null and vars.sqlParams.appDateTo != null) " AND A.LATST_INP_TM BETWEEN TO_DATE(:appDateStart,'YYYY-MM-DD') AND TO_DATE(:appDateTo,'YYYY-MM-DD') " else "",
+    "cancelDateVar": if (vars.sqlParams.appDateStart != null and vars.sqlParams.appDateTo != null) " AND A.CNCL_INP_TM BETWEEN TO_DATE(:appDateStart,'YYYY-MM-DD') AND TO_DATE(:appDateTo,'YYYY-MM-DD') " else "",
+    "offSetLimitVar": " OFFSET " ++ p('global.properties.sql.offset') ++ " ROWS FETCH NEXT " ++ p('global.properties.sql.max.results') ++  " ROWS ONLY",
+    "ifaClientControlVar":  if(vars.sqlParams.corpCode != null) " IFA_CLNT_CONTRL Y, " else  " IFA_CLNT_CONTRL_HIST Y, ",
+    "ifaClientControlWoVar":  if(vars.sqlParams.corpCode != null) 
+    	    									if (vars.sqlParams.officeCd != null)" IFA_CLNT_CONTRL Y, " 
+    	                          		 	 	else " IFA_CLNT_CONTRL Y " 
+    						else if (vars.sqlParams.officeCd != null) " IFA_CLNT_CONTRL_HIST Y, "
+        						else " IFA_CLNT_CONTRL_HIST Y ",
+    "ifaChargeMasterVar": if (vars.sqlParams.officeCd != null) " IFA_CHARGE_MSTR Z, " else "", 
+    "ifaClntCtrlIdxVar": if(vars.sqlParams.corpCode != null) " SELECT /*+ ORDERED USE_NL(X) INDEX(Y IFA_CLNT_CONTRL_IDX01) */ " else  " SELECT /*+ ORDERED USE_NL(X) INDEX(Y IFA_CLNT_CONTRL_I04) */ ",
+    "ifaChargeMasterWoCvar": if (vars.sqlParams.officeCd != null) " IFA_CHARGE_MSTR Z " else "",
+    "applyDateVar": if (vars.sqlParams.appDateStart != null and vars.sqlParams.appDateTo != null) " AND A.APPL_DT BETWEEN TO_DATE(:appDateStart,'YYYY-MM-DD') AND TO_DATE(:appDateTo,'YYYY-MM-DD') " else ""
+}
