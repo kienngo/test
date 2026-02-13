@@ -366,3 +366,6 @@ output application/java
     "ifaChargeMasterWoCvar": if (vars.sqlParams.officeCd != null) " IFA_CHARGE_MSTR Z " else "",
     "applyDateVar": if (vars.sqlParams.appDateStart != null and vars.sqlParams.appDateTo != null) " AND A.APPL_DT BETWEEN TO_DATE(:appDateStart,'YYYY-MM-DD') AND TO_DATE(:appDateTo,'YYYY-MM-DD') " else ""
 }
+
+
+release/kmd_20260113
