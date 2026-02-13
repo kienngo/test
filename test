@@ -375,6 +375,6 @@ C:\Users\sts-kien.ngoduc\Desktop\project\mule\rakuten-ifa-oracle-sapi\src\main\r
 C:\Users\sts-kien.ngoduc\Desktop\project\mule\rakuten-ifa-oracle-sapi\src\main\resources\dwl\sql\sqlQuery_3A.dwl
 C:\Users\sts-kien.ngoduc\Desktop\project\mule\rakuten-ifa-oracle-sapi\src\main\resources\dwl\sql\sqlQuery_3B.dwl
 
-git commit --amend --author="TênGitLabCủaBạn <email_gitlab_của_bạn>" --no-edit
+git commit --amend --author="NgoDuc, Kien | SECB <ts-kien.ngoduc@rakuten-sec.co.jp>" --no-edit
 git push -f origin release/kmd_20260225
 git config user.email "ts-kien.ngoduc@rakuten-sec.co.jp"
