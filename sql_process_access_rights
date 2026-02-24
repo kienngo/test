@@ -1,0 +1,41 @@
+%dw 2.0
+import * from dw::core::Dates
+output application/json
+var initialLoadFlg =  attributes.queryParams.initialLoadFlg default false
+var initialLoad = "select * from  (
+	select 
+			A.IFA_CORP_CD, 
+			M.IFA_CHARGE_CD, 
+			A.OFFICE_CD,OFFICE_AUTH_FLG, 
+			A.UPDATE_DT, 
+			A.CREATE_DT  
+  	FROM
+    	IFA_OFFICE_AUTH A,
+    	IFA_CHARGE_MSTR M
+   WHERE 
+         A.IFA_CHARGE_CD = M.RELAY_IFA_CHARGE_CD(+) AND
+         A.IFA_CORP_CD = M.IFA_CORP_CD(+) AND
+         (A.CREATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS') AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') 
+        )) Z 
+      WHERE Z.IFA_CHARGE_CD IS NOT NULL "
+var deltaLoad = "select * from  (
+	select 
+			A.IFA_CORP_CD, 
+			M.IFA_CHARGE_CD, 
+			A.OFFICE_CD,OFFICE_AUTH_FLG, 
+			A.UPDATE_DT, 
+			A.CREATE_DT  
+  	FROM
+    	IFA_OFFICE_AUTH A,
+    	IFA_CHARGE_MSTR M
+   WHERE 
+         A.IFA_CHARGE_CD = M.RELAY_IFA_CHARGE_CD(+) AND
+         A.IFA_CORP_CD = M.IFA_CORP_CD(+) AND
+         (A.CREATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS') AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') 
+         OR          
+          A.UPDATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS') AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS'))) Z 
+      
+      WHERE Z.IFA_CHARGE_CD IS NOT NULL"
+---
+if(initialLoadFlg) initialLoad 
+		else deltaLoad
