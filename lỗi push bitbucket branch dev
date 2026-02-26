@@ -1,0 +1,78 @@
+git -c diff.mnemonicprefix=false -c core.quotepath=false --no-optional-locks push -v origin develop:develop
+POST git-receive-pack (232 bytes)
+remote:                             *%%%%%.                                    
+remote:                         %%%         %%%                                
+remote:                      ,%#               %%                              
+remote:                     %%                   %%                            
+remote:                    %#                     %%                           
+remote:                   %%                       %                           
+remote:                   %(                       %%                          
+remote:                   %%%%%%%%%%%%%%%%%%%%%%%%%%%                          
+remote:                 %#%*%#///////%# %%///////%%%%%%                        
+remote:                ,% %*%%******%#   %%******%(%%,%                        
+remote:                  %%/ %%/**%%/%%%%%%%(**#%( %%#                         
+remote:                   %%          %%%          %(                          
+remote:                    %                      .%                           
+remote:                    *%        %%%%%       .%                            
+remote:                      %#                 %%                             
+remote:                       .%%            .%%                               
+remote:                       .%%.%%,     %%%.%%/                              
+remote:                 %%%%%%##%.  #%%%%%.  .%((%%%%%%                        
+remote:             %%#(((((((((%%,         #%%(((((((((#%%.                   
+remote:       %%%((((((((((((((((((%%%, .%%%((((((((((((((((((#%%*             
+remote:     %%(((((((((((((((((((((((((%(((((((((((((((((((((((((#%.           
+remote:   ,%(((((((((((((((((((((((((((((((((((((((((((((((((((((((%#          
+remote:   %#((((((((((((((((((((((((((((((((((((((((((((((((((((((((%          
+remote:   %%%%%%%%%%%%%(((((((((((((((((((((((((((((((((%%%%%%%%%%%%%          
+remote:  %%            %####((((((###%%%%%%%%#(((((((((%            ,%         
+remote: ,%             %%%%%%#.               %%%((((((%*            %%        
+remote: #%                                       %%%#                %%        
+remote: .%                             .%%%%%%%%%                    %#        
+remote:  %                         #%%%                              %         
+remote:  %                     %%%%                                  %*        
+remote: /%************/#%%%%%%######%%*                        ..,*/(%%        
+remote:               %%######(((((((##################%%                      
+remote:               %%######(((((((((((((((((((((((((%%                      
+remote: //////////////%%%%%%%%#########################%%/////////  ///        
+remote: ----------------------------------------------------        
+remote: Branch refs/heads/develop can only be modified through pull requests.        
+remote: Check your branch permissions configuration with the project administrator.        
+remote: ----------------------------------------------------        
+remote: 
+remote: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pushing to https://git.rakuten-it.com/scm/rsmuleapi/rakuten-ifa-oracle-sapi.git
+To https://git.rakuten-it.com/scm/rsmuleapi/rakuten-ifa-oracle-sapi.git
+ ! [remote rejected] develop -> develop (pre-receive hook declined)
+error: failed to push some refs to 'https://git.rakuten-it.com/scm/rsmuleapi/rakuten-ifa-oracle-sapi.git'
+
+
+
+Completed with errors, see above.
