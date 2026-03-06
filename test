@@ -388,3 +388,8 @@ CWR_Office_Access__c
 rakuten-ifa-business-report-papi
 rakuten-ifa-oracle-sapi
 rakuten-ifa-sf-sapi
+
+
+Operation: Set Variable
+Variable Name: inputQueryParams
+Value: #[attributes.queryParams]
