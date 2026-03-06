@@ -393,3 +393,7 @@ rakuten-ifa-sf-sapi
 Operation: Set Variable
 Variable Name: inputQueryParams
 Value: #[attributes.queryParams]
+
+Production :
+username : ts-seiji.ogihara@rakuten-sec.co.jp
+pass : C@pgemini2025
