@@ -109,3 +109,24 @@ if(not isEmpty(payload))
 	"officeKey": payload.corporateCode default "" ++ "-" ++ payload.officeCode default "",
 	"isDeleted": if(payload.isDeleted == "0")"false" else if (payload.isDeleted == "1")"true" else null
 } else []
+
+%dw 2.0
+import toBoolean from dw::util::Coercions
+
+output application/json
+---
+if(not isEmpty(payload))
+payload map{
+	"CWR_Address__c": $.address,
+	"CWR_Comment__c": $.comment,
+	"CWR_IP1__c": $.fixedIP1,
+	"CWR_IP2__c": $.fixedIP2,
+	"CWR_IP3__c": $.fixedIP3,
+	"Name": $.salesOfficeName,
+	"CWR_Office_code__c": $.officeCode,
+	"CWR_Corporate__r": {"cd_ifa_corp__c":$.corporateName},
+	"CWR_Telephone_number__c": $.telNumber,
+	"CWR_Office_key__c": $.officeKey,
+	"CWR_Logical_delete_business_office__c": toBoolean($.isDeleted)
+}
+else []
