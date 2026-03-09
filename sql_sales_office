@@ -1,0 +1,67 @@
+%dw 2.0
+import * from dw::core::Dates
+output application/json
+var initialLoadFlg =  attributes.queryParams.initialLoadFlg default false
+var createDateSQL = "SELECT 
+    ADDRESS,
+    IFA_WEB_COMMENT,
+    IFA_CORP_CD,
+    IPADDRESS1_1,
+    IPADDRESS1_2,
+    IPADDRESS1_3,
+    IPADDRESS1_4,
+    IPADDRESS2_1,
+    IPADDRESS2_2,
+    IPADDRESS2_3,
+    IPADDRESS2_4,
+    IPADDRESS3_1,
+    IPADDRESS3_2,
+    IPADDRESS3_3,
+    IPADDRESS3_4,
+    OFFICE_NM,
+    OFFICE_CD,
+    TEL1_1,
+    TEL1_2,
+    TEL1_3,
+    DELETE_KBN,
+    0 AS CATEGORY
+FROM IFA_CORP_OFFICE_MST
+WHERE
+	CREATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS') AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS')"
+
+var updateDateSql = " SELECT 
+    ADDRESS,
+    IFA_WEB_COMMENT,
+    IFA_CORP_CD,
+    IPADDRESS1_1,
+    IPADDRESS1_2,
+    IPADDRESS1_3,
+    IPADDRESS1_4,
+    IPADDRESS2_1,
+    IPADDRESS2_2,
+    IPADDRESS2_3,
+    IPADDRESS2_4,
+    IPADDRESS3_1,
+    IPADDRESS3_2,
+    IPADDRESS3_3,
+    IPADDRESS3_4,
+    OFFICE_NM,
+    OFFICE_CD,
+    TEL1_1,
+    TEL1_2,
+    TEL1_3,
+    DELETE_KBN,
+    1 AS CATEGORY
+FROM IFA_CORP_OFFICE_MST
+WHERE
+    UPDATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS') AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS')
+    AND NOT (
+        CREATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS') AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS')
+    )
+"
+---
+if(initialLoadFlg) createDateSQL 
+		else (createDateSQL ++ " UNION " ++ updateDateSql)
+
+
+
