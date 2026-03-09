@@ -63,5 +63,31 @@ WHERE
 if(initialLoadFlg) createDateSQL 
 		else (createDateSQL ++ " UNION " ++ updateDateSql)
 
-
-
+%dw 2.0
+import * from dw::util::Coercions
+output application/json
+---
+(flatten(payload.payload) default []) map{
+	"address": $.ADDRESS default "",
+	"comment": $.IFA_WEB_COMMENT default "",
+	"corporateCode": toString($.IFA_CORP_CD) default "",
+	"ipAddress1_1": $.IPADDRESS1_1 default "",
+	"ipAddress1_2": $.IPADDRESS1_2 default "",
+	"ipAddress1_3": $.IPADDRESS1_3 default "",
+	"ipAddress1_4": $.IPADDRESS1_4 default "",
+	"ipAddress2_1": $.IPADDRESS2_1 default "",
+	"ipAddress2_2": $.IPADDRESS2_2 default "",
+	"ipAddress2_3": $.IPADDRESS2_3 default "",
+	"ipAddress2_4": $.IPADDRESS2_4 default "",
+	"ipAddress3_1": $.IPADDRESS3_1 default "",
+	"ipAddress3_2": $.IPADDRESS3_2 default "",
+	"ipAddress3_3": $.IPADDRESS3_3 default "",
+	"ipAddress3_4": $.IPADDRESS3_4 default "",
+	"salesOfficeName": $.OFFICE_NM default "",
+	"officeCode": toString($.OFFICE_CD) default "",
+	"tel1_1": $.TEL1_1 default "",
+	"tel1_2": $.TEL1_2 default "",
+	"tel1_3": $.TEL1_3 default "",
+	"isDeleted": toString($.DELETE_KBN) default ""
+	
+}
