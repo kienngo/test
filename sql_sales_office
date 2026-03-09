@@ -91,3 +91,21 @@ output application/json
 	"isDeleted": toString($.DELETE_KBN) default ""
 	
 }
+
+%dw 2.0
+output application/json
+---
+if(not isEmpty(payload))   
+{
+    "address": payload.address,
+	"comment": payload.comment default "",
+	"fixedIP1": payload.ipAddress1_1 default "" ++ "." ++ payload.ipAddress1_2 default "" ++ "." ++ payload.ipAddress1_3 default "" ++ "." ++ payload.ipAddress1_4 default "",
+	"fixedIP2": payload.ipAddress2_1 default "" ++ "." ++ payload.ipAddress2_2 default "" ++ "." ++ payload.ipAddress2_3 default "" ++ "." ++ payload.ipAddress2_4 default "",
+	"fixedIP3": payload.ipAddress3_1 default "" ++ "." ++ payload.ipAddress3_2 default "" ++ "." ++ payload.ipAddress3_3 default "" ++ "." ++ payload.ipAddress3_4 default "",
+	"salesOfficeName": payload.salesOfficeName,
+	"officeCode": payload.officeCode,
+	"corporateName": payload.corporateCode,
+	"telNumber": payload.tel1_1 default "" ++ "-" ++  payload.tel1_2  default "" ++ "-" ++ payload.tel1_3 default "",
+	"officeKey": payload.corporateCode default "" ++ "-" ++ payload.officeCode default "",
+	"isDeleted": if(payload.isDeleted == "0")"false" else if (payload.isDeleted == "1")"true" else null
+} else []
