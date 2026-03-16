@@ -1,1 +1,12 @@
-
+Release ngày 21/03/2026
+NO...3:
+1. Source api
+  +, rakuten-ifa-oracle-sapi
+    - branch: release/kmd_20260321
+2. Database
+  +, Kiểm tra format file trước khi đẩy lên production để release => yêu cầu: EUC
+  +, Thư mục release script sql: 60(release) > No.03 > 20260321
+  +, Chạy script sql trên DB1~9
+3. Kiểm tra sau release
+  +, Check màn hình search No.3 loại bỏ các lỗi đã tìm thấy từ trước đó và đã gửi khách hàng
+  +, So sánh kết quả với thư mục KienND > no3
