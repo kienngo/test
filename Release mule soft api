@@ -10,3 +10,4 @@ NO...3:
 3. Kiểm tra sau release
   +, Check màn hình search No.3 loại bỏ các lỗi đã tìm thấy từ trước đó và đã gửi khách hàng
   +, So sánh kết quả với thư mục KienND > no3
+  +, Gather statistic khách hàng sẽ chạy trên production, phía VHEC chỉ chạy trên staging để gửi báo cáo
