@@ -1,0 +1,276 @@
+" SELECT
+     /*+ APL-270500018 */      
+     (CASE LENGTH(C.CLIENT_CD)
+     WHEN 9 THEN SUBSTR(C.CLIENT_CD , 1 , 3)
+     WHEN 6 THEN (SELECT DECODE(SUBSTR(NAME,-6),'RSDB01','701','RSDB02','708','RSDB03','702','RSDB04','703','RSDB05','704','RSDB06','705','RSDB07','706','RSDB08','707','RSDB09','709') FROM V\$DATABASE)
+     ELSE NULL END  ||
+      CASE LENGTH (C.CLIENT_CD)
+      WHEN 9 THEN SUBSTR (C.CLIENT_CD, 4)
+      ELSE TO_CHAR (C.CLIENT_CD)
+     END) AS CUSTOMER_CD,
+     C.BRANCH_CD,
+     C.CLIENT_CD,
+     E.ISA_APPLY_STS,
+     F.ACC_STATUS,
+     G.MAIN_PERSON_KBN,
+     ( CASE 
+        WHEN EXISTS (
+            SELECT 1 FROM RELATION_ACC_MNG RAM WHERE RAM.USER_ID = B.USER_ID
+            UNION 
+            SELECT 1 FROM GROUP_ID_MNG GIM WHERE GIM.USER_ID = B.USER_ID
+        ) 
+    THEN 'TRUE'
+    ELSE 'FALSE'
+    END) AS IS_CHILD_ACCOUNT,
+     H.NISA_OPN_DT,
+     H.NISA_CLS_DT,
+     U.SPA_APPL_FLG,
+     B.CLNT_NM,
+     B.CLNT_KANA_NM,
+     B.GENDER_KBN,
+     B.NATIONALITY,
+     B.BIRTH_DT,
+     B.EXTNL_TEL_NO,
+     B.LOCAL_TEL_NO,
+     B.TEL_NO,
+     B.MOBILE_PHONE_NO_1, 
+     B.MOBILE_PHONE_NO_2,
+     B.MOBILE_PHONE_NO_3,
+     U.CONTACT_PRIORITY_1,
+     B.ADDRS_KNJ_1,
+     B.ADDRS_KNJ_2,
+     B.ADDRS_KNJ_3,
+     C.IFA_CONTRACT_KBN,
+     A.MARGIN_ACC_OPN_FLG,
+     A.MARGIN_ACC_OPN_DT,
+     A.MARGIN_ACC_CLS_FLG,
+     A.MARGIN_ACC_CLS_DT,
+     A.US_MG_ACC_OPN_FLG ,
+     A.US_MG_ACC_OPN_DT,
+     A.US_MG_ACC_CLS_FLG,
+     A.US_MG_ACC_CLS_DT,
+     D.TM_COMMISSION_COURSE,
+     C.IFA_STOCK_COMM_CHG_DT,
+     C.IFA_COMMISSION_FLG,
+     C.IFA_COMM_CHG_DT,
+     C.IFA_SPRD_DSCT_FLG,
+     C.IFA_SPRD_DSCT_DT,
+     T.USER_ID,
+     T.USER_ID_CONSIGNOR,
+     T.USER_ID_TRUSTEE,
+     B.OCCUPATION_CD,
+     U.COMP_DSCR_CD,
+     U.TYPE_OF_BUSINESS,
+     B.COMP_NM,
+     U.AFFILICATION_POST,
+     B.POSITION,
+     O.DIV_FLG_EXECTIVE,
+     O.DIV_FLG_EMPLOYEE,
+     O.DIV_FLG_LARGE_STOCKHOLDER,
+     O.DIV_FLG_MAIN_STOCKHOLDER,
+     O.DIV_FLG_BLOOD_GROUP,
+     O.DIV_FLG_SPOUSE,
+     B.FNCL_ASST_RANGE_KBN,
+     B.INVST_PLN_MSK,
+     B.EXP_INVST_MSK,
+     B.MOVEMNT_MSK,
+     U.TRANSACTION_MOTIVE_OTHERS,
+     B.INTRST_INVST_MSK,
+     U.INTRST_INVST_MSK_OTHERS,
+     C.IFA_CORP_CD,
+     M.OFFICE_CD,
+     C.IFA_CHARGE_CD,
+     N.CODE_TEXT AS INV_POLICY,
+  	 U.DECLARED_AMOUNT,
+	 (
+        SELECT LISTAGG(N.CODE_TEXT, '、') 
+               WITHIN GROUP (ORDER BY N.CODE_NO)
+        FROM (
+            SELECT REGEXP_SUBSTR(U.TYPE_OF_INCOME, '[^/]+', 1, LEVEL) AS CODE
+            FROM DUAL
+            CONNECT BY LEVEL <= REGEXP_COUNT(U.TYPE_OF_INCOME, '/') + 1
+        ) t
+        LEFT JOIN ACC_INV_TYP_FIN_ITEM_MST N 
+		ON N.CODE_NO = t.CODE 
+		AND N.ITEM_KBN(+) = 2 
+    ) AS TYPE_OF_INCOME,
+     U.TYPE_OF_INCOME_OTH
+    FROM      
+         BV_USER_PROFILE B,
+         IFA_CLNT_CONTRL C,
+         USER_PROFILE_ADD_INFO U,
+		 ACC_INV_TYP_FIN_ITEM_MST N,
+         TRUST_ACC_MNG T,
+         BV_USER_ACCOUNT A,
+         CLIENT_COMMISSION D,
+         IFA_CHARGE_MSTR M,
+         OWN_INSIDER O,
+         CLNT_ISA_MNG E,
+         TRUST_ACC_MNG F,
+         RELATION_ACC_MNG G,
+         SNISA_TAX_FREE_LMT H
+     
+     WHERE 
+     1=1 AND 
+     C.CLIENT_CD  = B.CLIENT_CD(+) AND
+     B.USER_ID = A.USER_ID(+) AND
+     B.USER_ID = U.USER_ID (+) AND
+	 U.INV_POLICY = N.CODE_NO(+) AND
+     N.ITEM_KBN(+) = 1 AND
+     B.USER_ID = E.USER_ID(+) AND
+     B.USER_ID = F.USER_ID(+) AND
+     B.USER_ID = G.USER_ID(+) AND
+     C.IFA_CORP_CD = M.IFA_CORP_CD(+) AND 
+     C.IFA_CHARGE_CD = M.IFA_CHARGE_CD(+) AND  
+     C.CLIENT_CD = T.CLIENT_CD(+) AND 
+     C.CLIENT_CD = D.CLIENT_CD(+) AND 
+     C.CLIENT_CD = O.CLIENT_CD(+) AND
+     C.CLIENT_CD = H.CLIENT_CD(+) AND
+     C.CLIENT_CD IN (SELECT DISTINCT Z.CLIENT_CD FROM
+(SELECT
+    Y.CLIENT_CD
+        FROM 
+            BV_USER_PASSWD P,
+            (SELECT B.USER_ID, B.CLIENT_CD FROM BV_USER_PROFILE B  
+                 WHERE B.LAST_MOD_TIME BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') ) Y
+        WHERE 1=1 AND
+              Y.USER_ID = P.USER_ID AND
+              P.LOGIN_LEVEL = '80'
+UNION ALL
+ SELECT
+    Y.CLIENT_CD
+        FROM 
+            BV_USER_PASSWD P,
+            (SELECT B.USER_ID, X.CLIENT_CD FROM BV_USER_PROFILE B,  
+                (SELECT C.CLIENT_CD FROM IFA_CLNT_CONTRL C 
+                    WHERE C.UPDATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') ) X 
+                WHERE X.CLIENT_CD = B.CLIENT_CD) Y 
+        WHERE 1=1 AND
+              Y.USER_ID = P.USER_ID AND
+              P.LOGIN_LEVEL = '80'
+UNION ALL
+
+    SELECT
+    Y.CLIENT_CD
+       FROM 
+            BV_USER_PASSWD P,
+            (SELECT X.USER_ID, B.CLIENT_CD FROM BV_USER_PROFILE B,  
+                (SELECT C.USER_ID FROM USER_PROFILE_ADD_INFO C 
+                    WHERE 1=1 AND C.UPDATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') ) X 
+                WHERE X.USER_ID = B.USER_ID) Y 
+        WHERE 1=1 AND
+              Y.USER_ID = P.USER_ID AND
+              P.LOGIN_LEVEL = '80'
+UNION ALL
+    SELECT
+    Y.CLIENT_CD
+       FROM 
+            BV_USER_PASSWD P,
+            (SELECT X.USER_ID, B.CLIENT_CD FROM BV_USER_PROFILE B,  
+                (SELECT C.USER_ID FROM TRUST_ACC_MNG C 
+                    WHERE C.UPDATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') ) X 
+                WHERE X.USER_ID = B.USER_ID) Y 
+        WHERE 1=1 AND
+              Y.USER_ID = P.USER_ID AND
+              P.LOGIN_LEVEL = '80'
+
+UNION ALL
+    SELECT
+    Y.CLIENT_CD
+        FROM 
+            BV_USER_PASSWD P,
+            (SELECT B.USER_ID, X.CLIENT_CD FROM BV_USER_PROFILE B,  
+                (SELECT C.CLIENT_CD FROM CLIENT_COMMISSION C 
+                    WHERE C.TM_UPD_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') ) X 
+                WHERE X.CLIENT_CD = B.CLIENT_CD) Y 
+        WHERE 1=1 AND
+              Y.USER_ID = P.USER_ID AND
+              P.LOGIN_LEVEL = '80'
+UNION ALL
+    SELECT
+    Y.CLIENT_CD
+       FROM 
+            BV_USER_PASSWD P,
+            (SELECT X.USER_ID, B.CLIENT_CD FROM BV_USER_PROFILE B,  
+                (SELECT C.USER_ID FROM BV_USER_ACCOUNT C 
+                    WHERE 1=1 AND         
+                        C.MARGIN_ACC_OPN_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') OR
+                        C.MARGIN_ACC_CLS_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') OR
+                        C.US_MG_ACC_OPN_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') OR
+                        C.US_MG_ACC_CLS_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') 
+                             ) X 
+                WHERE X.USER_ID = B.USER_ID) Y 
+        WHERE 1=1 AND
+              Y.USER_ID = P.USER_ID AND
+              P.LOGIN_LEVEL = '80'
+
+UNION ALL
+ SELECT
+    Y.CLIENT_CD
+        FROM 
+            BV_USER_PASSWD P,
+            (SELECT B.USER_ID, X.CLIENT_CD FROM BV_USER_PROFILE B,  
+                (SELECT C.CLIENT_CD FROM OWN_INSIDER C 
+                    WHERE C.UPDATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') ) X 
+                WHERE X.CLIENT_CD = B.CLIENT_CD) Y 
+        WHERE 1=1 AND
+              Y.USER_ID = P.USER_ID AND
+              P.LOGIN_LEVEL = '80'
+              
+UNION ALL
+ SELECT
+    Y.CLIENT_CD
+        FROM 
+            BV_USER_PASSWD P,
+            (SELECT B.USER_ID, X.CLIENT_CD FROM BV_USER_PROFILE B,  
+                (SELECT C.CLIENT_CD FROM SNISA_TAX_FREE_LMT C 
+                    WHERE C.UPDATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') ) X 
+                WHERE X.CLIENT_CD = B.CLIENT_CD) Y 
+        WHERE 1=1 AND
+              Y.USER_ID = P.USER_ID AND
+              P.LOGIN_LEVEL = '80'
+              
+UNION ALL
+    SELECT
+    Y.CLIENT_CD
+       FROM 
+            BV_USER_PASSWD P,
+            (SELECT X.USER_ID, B.CLIENT_CD FROM BV_USER_PROFILE B,  
+                (SELECT C.USER_ID FROM CLNT_ISA_MNG C 
+                    WHERE C.UPDATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') ) X 
+                WHERE X.USER_ID = B.USER_ID) Y 
+        WHERE 1=1 AND
+              Y.USER_ID = P.USER_ID AND
+              P.LOGIN_LEVEL = '80'
+              
+UNION ALL
+    SELECT
+    Y.CLIENT_CD
+       FROM 
+            BV_USER_PASSWD P,
+            (SELECT X.USER_ID, B.CLIENT_CD FROM BV_USER_PROFILE B,  
+                (SELECT C.USER_ID FROM TRUST_ACC_MNG C 
+                    WHERE C.UPDATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') ) X 
+                WHERE X.USER_ID = B.USER_ID) Y 
+        WHERE 1=1 AND
+              Y.USER_ID = P.USER_ID AND
+              P.LOGIN_LEVEL = '80'
+              
+UNION ALL
+    SELECT
+    Y.CLIENT_CD
+       FROM 
+            BV_USER_PASSWD P,
+            (SELECT X.USER_ID, B.CLIENT_CD FROM BV_USER_PROFILE B,  
+                (SELECT C.USER_ID FROM RELATION_ACC_MNG C 
+                    WHERE C.UPDATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') ) X 
+                WHERE X.USER_ID = B.USER_ID) Y 
+        WHERE 1=1 AND
+              Y.USER_ID = P.USER_ID AND
+              P.LOGIN_LEVEL = '80'
+              
+UNION ALL 
+    SELECT CLIENT_CD FROM IFA_CLNT_CONTRL 
+            WHERE 1=1 
+                AND UPDATE_DT BETWEEN  TO_DATE(:fromDate,'YYYY-MM-DD HH24:MI:SS')  AND TO_DATE(:toDate,'YYYY-MM-DD HH24:MI:SS') 
+                AND IFA_CORP_CD = '99') Z )"
